@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>螺丝秤 NutWeigh</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">⬢</span>
+      <span id="appTitle" data-i18n="appTitle"></span>
+    </div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="zh">中文</button>
+      <button type="button" data-lang="th">ไทย</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" data-page="calc" data-i18n="tabCalc"></button>
+    <button type="button" data-page="table" data-i18n="tabTable"></button>
+    <button type="button" data-page="edit" data-i18n="tabEdit"></button>
+  </nav>
+
+  <div id="customBanner" class="banner" hidden></div>
+
+  <main>
+    <!-- ============ 计算 / คำนวณ ============ -->
+    <section id="page-calc" class="page">
+      <div class="card">
+        <h2 data-i18n="step1"></h2>
+        <div class="seg seg-wrap" id="typeSeg"></div>
+        <div class="grid2">
+          <label class="field">
+            <span data-i18n="size"></span>
+            <select id="sizeSel"></select>
+          </label>
+          <label class="field" id="lenField">
+            <span data-i18n="length"></span>
+            <select id="lenSel"></select>
+          </label>
+        </div>
+        <div class="basis" id="basis"></div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="step2"></h2>
+        <div class="seg" id="modeSeg"></div>
+        <label class="field big">
+          <span id="amountLabel"></span>
+          <div class="inputwrap">
+            <input id="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0">
+            <span class="unit" id="amountUnit"></span>
+          </div>
+        </label>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="step3"></h2>
+        <span class="sublabel" data-i18n="roundWhat"></span>
+        <div class="seg seg-wrap" id="targetSeg"></div>
+        <div id="roundOpts">
+          <span class="sublabel" data-i18n="roundLevel"></span>
+          <div class="chips" id="levelChips"></div>
+          <div class="steprow">
+            <span class="muted" data-i18n="custom"></span>
+            <input id="stepInput" type="text" inputmode="decimal" class="stepinput">
+            <span class="unit-inline" id="stepUnit"></span>
+          </div>
+          <span class="sublabel" data-i18n="roundDir"></span>
+          <div class="seg" id="dirSeg"></div>
+        </div>
+      </div>
+
+      <div class="card result" id="result" aria-live="polite"></div>
+
+      <div class="card">
+        <div class="cardhead">
+          <h2 data-i18n="history"></h2>
+          <button type="button" class="ghost small" id="clearHistory" data-i18n="clear"></button>
+        </div>
+        <ul class="history" id="historyList"></ul>
+      </div>
+    </section>
+
+    <!-- ============ 数据表 / ตาราง ============ -->
+    <section id="page-table" class="page" hidden>
+      <div class="card">
+        <h2 data-i18n="tableTitle"></h2>
+        <p class="muted" id="tableNote"></p>
+        <div class="chips" id="tableFilter"></div>
+      </div>
+      <div class="tablegrid" id="tableGrid"></div>
+    </section>
+
+    <!-- ============ 编辑 / แก้ไข ============ -->
+    <section id="page-edit" class="page" hidden>
+      <div class="card">
+        <h2 data-i18n="editTitle"></h2>
+        <p class="muted" data-i18n="editNote"></p>
+        <div class="grid2">
+          <label class="field">
+            <span data-i18n="baseJin"></span>
+            <input id="eBaseJin" type="text" inputmode="decimal">
+          </label>
+          <label class="field">
+            <span data-i18n="size"></span>
+            <select id="eSizeSel"></select>
+          </label>
+        </div>
+      </div>
+
+      <div class="card" id="eSizeCard"></div>
+
+      <div class="card">
+        <h2 data-i18n="addSize"></h2>
+        <div class="steprow">
+          <input id="eNewSize" type="text" placeholder="M27">
+          <button type="button" id="eAddSize" data-i18n="add"></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="fileTitle"></h2>
+        <div class="info" id="eSource"></div>
+        <div class="actions">
+          <button type="button" class="ghost" id="eExport" data-i18n="exportJs"></button>
+          <button type="button" class="ghost" id="eImportBtn" data-i18n="import"></button>
+          <input type="file" id="eImport" accept=".js,.json,application/json,text/javascript" hidden>
+          <button type="button" class="ghost" id="eRestore" data-i18n="restoreBackup" hidden></button>
+          <button type="button" class="danger" id="eReset" data-i18n="reset"></button>
+        </div>
+        <ol class="howto" id="eHowto"></ol>
+      </div>
+
+      <div class="card sticky-actions">
+        <div class="actions">
+          <button type="button" class="primary" id="eSave" data-i18n="save"></button>
+          <button type="button" class="ghost" id="eDiscard" data-i18n="discard"></button>
+        </div>
+        <p class="msg" id="eMsg"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot" data-i18n="footer"></footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
