@@ -31,14 +31,14 @@
     <section id="page-calc" class="page">
       <div class="card">
         <h2 data-i18n="step1"></h2>
-        <div class="seg seg-wrap" id="typeSeg"></div>
+        <div class="seg seg-types" id="typeSeg"></div>
         <div class="grid2">
           <label class="field">
             <span data-i18n="size"></span>
             <select id="sizeSel"></select>
           </label>
           <label class="field" id="lenField">
-            <span data-i18n="length"></span>
+            <span id="itemLabel"></span>
             <select id="lenSel"></select>
           </label>
         </div>
@@ -100,11 +100,13 @@
       <div class="card">
         <h2 data-i18n="editTitle"></h2>
         <p class="muted" data-i18n="editNote"></p>
-        <div class="grid2">
-          <label class="field">
-            <span data-i18n="baseJin"></span>
-            <input id="eBaseJin" type="text" inputmode="decimal">
-          </label>
+        <label class="field">
+          <span data-i18n="baseJin"></span>
+          <input id="eBaseJin" type="text" inputmode="decimal">
+        </label>
+        <span class="sublabel" data-i18n="category"></span>
+        <div class="seg seg-wrap" id="eCatSeg"></div>
+        <div class="grid2" id="eSizeRow">
           <label class="field">
             <span data-i18n="size"></span>
             <select id="eSizeSel"></select>
@@ -114,7 +116,7 @@
 
       <div class="card" id="eSizeCard"></div>
 
-      <div class="card">
+      <div class="card" id="eAddSizeCard">
         <h2 data-i18n="addSize"></h2>
         <div class="steprow">
           <input id="eNewSize" type="text" placeholder="M27">

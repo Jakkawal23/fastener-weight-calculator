@@ -127,6 +127,7 @@ select:focus, input:focus { outline: 2px solid var(--accent); outline-offset: 1p
   padding: 4px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border);
 }
 .seg-wrap { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); }
+.seg-types { grid-auto-flow: row; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); }
 .seg button {
   border: 0; background: transparent; padding: 9px 6px; border-radius: 9px; cursor: pointer;
   font-size: 14px; font-weight: 600; color: var(--muted); line-height: 1.25;

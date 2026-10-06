@@ -2,7 +2,11 @@
 
 **English** · [ภาษาไทย](#ภาษาไทย)
 
-A small offline web app for warehouse staff to convert **quantity ↔ weight** for hex bolts, nuts, flat washers and spring washers, based on the **GB30 hex bolt quantity table** (GB30 数量表, white zinc-plated bolts).
+A small offline web app for warehouse staff to convert **quantity ↔ weight** for hex bolts, nuts, flat washers, spring washers and square washers. It is based on the supplier's paper quantity tables:
+- **GB30 数量表** (white zinc-plated hex bolts, plus nut weights)
+- **平垫数量表** (flat washers, 100 jin per quantity)
+- **镀锌弹垫数量表** (zinc-plated spring washers, 100 jin per quantity)
+- **方垫** (square washers, hand-written)
 
 Typical use: a customer orders 200 pcs of M8×25. NutWeigh tells you that's **5.45 jin (斤) = 2.725 kg**, rounds it to a weight you can actually put on the scale (e.g. **5.5 jin**), and shows how many pieces that rounded weight really is.
 
@@ -25,7 +29,12 @@ Typical use: a customer orders 200 pcs of M8×25. NutWeigh tells you that's **5.
 
 ## Features
 - **Three calculation modes:** pieces → jin/kg, jin → pieces, kg → pieces
-- **Four product types:** hex bolts (螺栓), nuts (螺母), flat washers (平垫), spring washers (弹垫); sizes M6–M24 with every length from the original table
+- **Five product types:**
+  - hex bolts (螺栓): M6–M24, every length from the table
+  - nuts (螺母): M6–M24
+  - flat washers (平垫): 50 specs from M4 to M48, given as inner × outer × thickness
+  - spring washers (弹垫): M6–M42
+  - square washers (方垫): 4 specs
 - **Rounding that is easy to set:**
   1. choose **what** to round: jin, kg, or pieces
   2. choose **how fine**: e.g. 10 / 5 / 1 / 0.5 jin, 1 liang (两) = 0.1 jin, whole pieces, 10 / 50 / 100 pcs, or a custom step
@@ -34,7 +43,7 @@ Typical use: a customer orders 200 pcs of M8×25. NutWeigh tells you that's **5.
   The result shows the exact value and the rounded value side by side, with a comparison of pieces / jin / kg and the difference.
 - **Bilingual UI:** Chinese by default with a Thai toggle. The Thai UI keeps Chinese units in brackets, e.g. `จิน (斤)`, `ตัว (个)`, to match Chinese invoices.
 - **Data table page** that shows every value used in the calculation, plus grams per piece. Tap a row to calculate with it.
-- **In-browser data editor:** change quantities, add or remove lengths and sizes, edit nut/washer weights.
+- **In-browser data editor:** change quantities, add or remove bolt lengths and sizes, edit nut weights, and add, edit or remove washer specs.
 - **Export / import `data.js`**, and **replace `data.js` on the server.** The app detects the new file automatically.
 - **Calculation history:** note down results during a picking session.
 - **Mobile-friendly:** bottom tab bar, large inputs, numeric keypad. Light and dark themes follow the device.
@@ -70,9 +79,12 @@ Then open http://localhost:8137.
 Switch language with **中文 / ไทย** in the top-right corner. The choice is remembered.
 
 ### 1. Calculate
-1. **Choose the product** (① 选择产品): bolt / nut / flat washer / spring washer, then the **size** (e.g. M8) and, for bolts, the **length** in mm.
+1. **Choose the product** (① 选择产品): bolt / nut / flat washer / spring washer / square washer. Then choose the **size** (e.g. M8) and, if asked:
+   - for bolts, the **length** in mm
+   - for flat and square washers, the **spec** (inner × outer × thickness, e.g. `8×22×1.5`)
+
    The green box below shows the value from the table that will be used, e.g.
-   `M8×25: 3,670 pcs / 100 jin → 0.02725 jin (13.62 g) each`.
+   `M8×25 bolt: 3,670 pcs / 100 jin → 0.027248 jin (13.624 g) each`.
 2. **Enter a value** (② 输入数值). Pick the mode first:
    | Mode | You enter | You get |
    |---|---|---|
@@ -103,18 +115,30 @@ Switch language with **中文 / ไทย** in the top-right corner. The choice 
 Weigh **5.5 jin** and you'll have about 202 pieces.
 
 ### 2. Data table
-- Shows every size with its lengths, **pieces per 100 jin**, and **grams per piece**, plus nut / flat washer / spring washer weights (jin per piece).
-- Use the chips at the top to filter by size.
+- Shows every table with **pieces per 100 jin** and **grams per piece**:
+  - one card per bolt size, with that size's nut weight (jin per piece)
+  - one card each for flat, spring and square washers; flat and square washers are grouped by size
+- Use the chips at the top to filter by product: bolts / nuts, flat, spring or square washers.
 - Cells marked **empty** (空 / ว่าง) were blank in the original paper table. Fill them in on the Edit page.
 - **Tap any row** to jump to the calculator with that item selected.
 - The last card lists the hand-written nut packaging notes. These are for reference only and are not used in calculations.
 
 ### 3. Edit data
-1. Pick a **size**. Edit the quantity for any length, delete a row with **×**, or add one with **+ Add length**.
-2. Edit nut / flat washer / spring washer weights (jin per piece). Leave a field empty if unknown.
-3. Add a new size (e.g. `M27`) or delete one.
-4. **Base jin** sets what the bolt quantities refer to (100 = pieces per 100 jin).
-5. Press **Save**. Values are checked: lengths must be unique positive numbers, and quantities must be positive or empty. **Discard** throws away unsaved edits.
+1. Choose a **category**: bolts / nuts, flat washers, spring washers or square washers.
+2. **Bolts / nuts:** pick a size, then:
+   - edit the quantity for any length
+   - delete a row with **×**, or add one with **+ Add length**
+   - edit the nut weight (jin per piece)
+   - add a new size (e.g. `M27`) or delete one
+3. **Washers:** edit, add (**+ Add row**) or delete rows.
+   - Flat and square washer specs use `inner*outer*thickness`, e.g. `8*22*1.5`. Typing `8x22x1.5` also works.
+   - Spring washers use the size, e.g. `M8`.
+4. **Base jin** sets what every quantity table refers to (100 = pieces per 100 jin).
+5. Press **Save**. Values are checked:
+   - lengths and specs must be valid and unique
+   - quantities must be positive or empty
+
+   **Discard** throws away unsaved edits.
 
 Saved edits are stored **in this browser only**. A yellow banner at the top reminds you when local edits are in use.
 
@@ -145,9 +169,10 @@ The **Data file** card on the Edit page shows which data is in use (`data.js` or
 ## How the calculation works
 
 ```
-Bolt:             weight per piece (jin) = boltBaseJin ÷ table quantity
-                  e.g. M8×25 → 100 ÷ 3670 = 0.02725 jin
-Nut / washers:    weight per piece (jin) = value from the table
+Bolts, washers:   weight per piece (jin) = baseJin ÷ table quantity
+                  e.g. M8×25 bolt        → 100 ÷ 3670  = 0.027248 jin
+                       flat washer 8×22×1.5 → 100 ÷ 14000 = 0.007143 jin
+Nuts:             weight per piece (jin) = value from the table
 
 pcs → jin:        jin = pcs × weight per piece
 jin → pcs:        pcs = jin ÷ weight per piece
@@ -166,17 +191,18 @@ kg  ↔ jin:        1 jin (斤) = 0.5 kg = 10 liang (两) = 500 g
 
 ```js
 window.DEFAULT_DATA = {
-  "version": "2026-10-04",          // change this whenever the data changes
-  "boltBaseJin": 100,               // bolt quantities = pieces per 100 jin
+  "version": "2026-10-06",          // change this whenever the data changes
+  "baseJin": 100,                   // every quantity = pieces per 100 jin
   "sizes": [
     {
       "size": "M8",
       "nutJin": 0.038,              // nut, jin per piece
-      "flatWasherJin": 0.02,        // flat washer, jin per piece
-      "springWasherJin": 0.02,      // spring washer, jin per piece
       "bolts": [[10,5450],[12,5050],[25,3670], ...]   // [length mm, pieces per 100 jin]; null = blank
     }
   ],
+  "flatWashers":   [["8*22*1.5",14000], ...],   // [inner*outer*thickness, pieces per 100 jin]
+  "springWashers": [["M8",31000], ...],         // [size, pieces per 100 jin]
+  "squareWashers": [["12*30*3",2500], ...],     // [inner*side*thickness, pieces per 100 jin]
   "nutPacks": [ { "size": "M8", "jin": 100, "pcs": 10000 } ]   // reference only
 };
 ```
@@ -192,10 +218,12 @@ The comments above are for explanation only. Keep the real file free of comments
 | `index.html` | Page layout (three pages: Calculate, Data table, Edit) |
 | `styles.css` | Styles, dark mode, mobile layout |
 | `app.js` | Calculation, rounding, translations (`I18N`), table, editor, import/export |
-| `data.js` | **The data**, taken from the GB30 table |
+| `data.js` | **The data**, taken from the paper tables (bolts, nuts, flat / spring / square washers) |
 | `README.md` | This file |
 
-**Browser storage keys:** `gb30.data` (local edits), `gb30.backup`, `gb30.lang`, `gb30.prefs2`, `gb30.history`.
+**Browser storage keys:** `gb30.data` (local edits), `gb30.backup`, `gb30.lang`, `gb30.prefs3`, `gb30.history`.
+
+**Older data files** (from before the washer tables, using `boltBaseJin` and per-size washer weights) can still be imported. They are converted automatically, and the washer lists start empty.
 
 **Adding a language:** add an entry to the `I18N` object in `app.js` and a button in the `.lang` group in `index.html`.
 
@@ -203,8 +231,9 @@ The comments above are for explanation only. Keep the real file free of comments
 
 ## Notes and known limitations
 - **Nut weights in the table vs. hand-written notes:** the table gives M8 nut = 0.038 jin (≈19 g), but the hand-written packaging note (100 jin / 10,000 pcs) implies 0.01 jin (≈5 g). The app uses the table value. Check by weighing and correct it in the editor if needed.
-- **Flat and spring washers** share the single 平弹垫 value from the paper table until you enter separate values.
-- Blank cells in the original table: M10×170, M10×190, M12×170, M12×180.
+- **Flat washer 30×56×3 = 700 pcs** looks like a possible misprint. By steel volume it should be about 1,250 pcs per 100 jin, close to 33×57×3 = 1,300. It is kept as printed; check by weighing.
+- **Square washers (方垫)** come from hand-written notes; they are assumed to be pieces per 100 jin like the other washer tables.
+- Blank cells in the original bolt table: M10×170, M10×190, M12×170, M12×180.
 - Local edits and history live in the browser. Clearing site data removes them, so export `data.js` as a backup.
 
 ---
@@ -214,7 +243,11 @@ The comments above are for explanation only. Keep the real file free of comments
 
 [English](#nutweigh-螺丝秤--ชั่งน็อต) · **ภาษาไทย**
 
-เว็บแอปเล็ก ๆ สำหรับพนักงานคลังสินค้า ใช้แปลง **จำนวน ↔ น้ำหนัก** ของน็อตตัวผู้ น็อตตัวเมีย แหวนอีแปะ และแหวนสปริง อ้างอิงจาก **ตาราง GB30 数量表** (น็อตหัวหกเหลี่ยมชุบขาว) ใช้งานได้โดยไม่ต้องต่ออินเทอร์เน็ต
+เว็บแอปเล็ก ๆ สำหรับพนักงานคลังสินค้า ใช้แปลง **จำนวน ↔ น้ำหนัก** ของน็อตตัวผู้ น็อตตัวเมีย แหวนอีแปะ แหวนสปริง และแหวนสี่เหลี่ยม ใช้งานได้โดยไม่ต้องต่ออินเทอร์เน็ต อ้างอิงจากตารางกระดาษของผู้ขาย:
+- **GB30 数量表** (น็อตหัวหกเหลี่ยมชุบขาว และน้ำหนักน็อตตัวเมีย)
+- **平垫数量表** (แหวนอีแปะ จำนวนต่อ 100 จิน)
+- **镀锌弹垫数量表** (แหวนสปริงชุบซิงค์ จำนวนต่อ 100 จิน)
+- **方垫** (แหวนสี่เหลี่ยม บันทึกลายมือ)
 
 ตัวอย่างการใช้งาน: ลูกค้าสั่ง M8×25 จำนวน 200 ตัว ระบบจะบอกว่าต้องชั่ง **5.45 จิน (斤) = 2.725 กก.** ปัดให้เป็นน้ำหนักที่ชั่งได้จริง เช่น **5.5 จิน** และบอกว่าน้ำหนักที่ปัดแล้วได้ประมาณกี่ตัว
 
@@ -237,7 +270,12 @@ The comments above are for explanation only. Keep the real file free of comments
 
 ## ความสามารถ
 - **คำนวณได้ 3 แบบ:** ตัว → จิน/กิโล, จิน → ตัว, กิโล → ตัว
-- **สินค้า 4 ประเภท:** น็อตตัวผู้ (螺栓), น็อตตัวเมีย (螺母), แหวนอีแปะ (平垫), แหวนสปริง (弹垫) ขนาด M6–M24 ครบทุกความยาวตามตารางต้นฉบับ
+- **สินค้า 5 ประเภท:**
+  - น็อตตัวผู้ (螺栓): M6–M24 ครบทุกความยาวตามตาราง
+  - น็อตตัวเมีย (螺母): M6–M24
+  - แหวนอีแปะ (平垫): 50 สเปก ตั้งแต่ M4 ถึง M48 ระบุเป็น ใน × นอก × หนา
+  - แหวนสปริง (弹垫): M6–M42
+  - แหวนสี่เหลี่ยม (方垫): 4 สเปก
 - **ปัดเศษได้ง่าย:**
   1. เลือกว่าจะปัด **ค่าอะไร**: จิน กิโล หรือจำนวน
   2. เลือก **ความละเอียด** เช่น 10 / 5 / 1 / 0.5 จิน, 1 ขีด (两) = 0.1 จิน, จำนวนเต็ม, ทีละ 10 / 50 / 100 ตัว หรือกำหนดเอง
@@ -246,7 +284,7 @@ The comments above are for explanation only. Keep the real file free of comments
   ผลลัพธ์แสดงค่าที่คำนวณได้คู่กับค่าที่ปัดแล้ว พร้อมตารางเทียบ จำนวน / จิน / กิโล และส่วนต่าง
 - **2 ภาษา:** ภาษาจีนเป็นค่าเริ่มต้น สลับเป็นภาษาไทยได้ หน้าภาษาไทยมีหน่วยภาษาจีนในวงเล็บ เช่น `จิน (斤)` `ตัว (个)` ใช้เทียบกับบิลจีนได้ง่าย
 - **หน้าตารางข้อมูล** แสดงค่าที่ใช้คำนวณทั้งหมด พร้อมน้ำหนักเป็นกรัมต่อตัว แตะแถวไหนก็ได้เพื่อไปคำนวณขนาดนั้น
-- **แก้ไขข้อมูลบนเว็บได้:** แก้จำนวน เพิ่มหรือลบความยาวและขนาด แก้น้ำหนักน็อตตัวเมียและแหวน
+- **แก้ไขข้อมูลบนเว็บได้:** แก้จำนวน เพิ่มหรือลบความยาวและขนาดน็อตตัวผู้ แก้น้ำหนักน็อตตัวเมีย และเพิ่ม แก้ หรือลบสเปกแหวน
 - **ส่งออก / นำเข้า `data.js`** และ **แทนไฟล์ `data.js` ที่หลังบ้านได้** ระบบจะรู้เองและเปลี่ยนไปใช้ไฟล์ใหม่
 - **ประวัติการคำนวณ** ไว้จดผลระหว่างจัดของ
 - **ใช้บนมือถือได้:** แถบเมนูอยู่ด้านล่าง ช่องกรอกใหญ่ เปิดแป้นตัวเลขให้อัตโนมัติ รองรับโหมดมืดตามเครื่อง
@@ -282,9 +320,12 @@ npx http-server -p 8137 -c-1
 สลับภาษาได้ที่ปุ่ม **中文 / ไทย** มุมขวาบน ระบบจะจำภาษาที่เลือกไว้
 
 ### 1. หน้าคำนวณ
-1. **เลือกสินค้า** (① เลือกสินค้า): น็อตตัวผู้ / น็อตตัวเมีย / แหวนอีแปะ / แหวนสปริง แล้วเลือก **ขนาด** (เช่น M8) ถ้าเป็นน็อตตัวผู้ให้เลือก **ความยาว** (มม.) ด้วย
+1. **เลือกสินค้า** (① เลือกสินค้า): น็อตตัวผู้ / น็อตตัวเมีย / แหวนอีแปะ / แหวนสปริง / แหวนสี่เหลี่ยม แล้วเลือก **ขนาด** (เช่น M8) และถ้ามีช่องให้เลือก:
+   - น็อตตัวผู้: เลือก **ความยาว** (มม.)
+   - แหวนอีแปะและแหวนสี่เหลี่ยม: เลือก **สเปก** (ใน × นอก × หนา เช่น `8×22×1.5`)
+
    กล่องสีเขียวด้านล่างจะบอกค่าจากตารางที่ใช้คำนวณ เช่น
-   `M8×25: 3,670 ตัว (个) / 100 จิน (斤) → ตัวละ 0.02725 จิน (13.62 กรัม)`
+   `M8×25 น็อตตัวผู้ (螺栓): 3,670 ตัว (个) / 100 จิน (斤) → ตัวละ 0.027248 จิน (13.624 กรัม)`
 2. **กรอกค่า** (② กรอกค่า) โดยเลือกโหมดก่อน:
    | โหมด | กรอก | ได้ผลลัพธ์ |
    |---|---|---|
@@ -315,18 +356,30 @@ npx http-server -p 8137 -c-1
 ชั่ง **5.5 จิน** จะได้ประมาณ 202 ตัว
 
 ### 2. หน้าตารางข้อมูล
-- แสดงทุกขนาด พร้อมความยาว **จำนวนตัวต่อ 100 จิน** และ **น้ำหนักกรัมต่อตัว** รวมถึงน้ำหนักน็อตตัวเมียและแหวน (จินต่อตัว)
-- กดปุ่มด้านบนเพื่อกรองดูเฉพาะขนาดที่ต้องการ
+- แสดงทุกตาราง พร้อม **จำนวนตัวต่อ 100 จิน** และ **น้ำหนักกรัมต่อตัว**:
+  - การ์ดของน็อตตัวผู้แยกตามขนาด พร้อมน้ำหนักน็อตตัวเมียของขนาดนั้น (จินต่อตัว)
+  - การ์ดแหวนอีแปะ แหวนสปริง และแหวนสี่เหลี่ยม อย่างละใบ โดยแหวนอีแปะและแหวนสี่เหลี่ยมจัดกลุ่มตามขนาด
+- กดปุ่มด้านบนเพื่อกรองตามประเภทสินค้า: น็อตตัวผู้ / ตัวเมีย, แหวนอีแปะ, แหวนสปริง หรือแหวนสี่เหลี่ยม
 - ช่องที่ขึ้นคำว่า **ว่าง** คือช่องที่ว่างในตารางกระดาษต้นฉบับ เติมได้ในหน้าแก้ไขข้อมูล
 - **แตะแถวไหนก็ได้** เพื่อไปหน้าคำนวณพร้อมเลือกสินค้านั้นให้ทันที
 - การ์ดสุดท้ายคือบันทึกลายมือเรื่องบรรจุภัณฑ์น็อตตัวเมีย ใช้อ้างอิงเท่านั้น ไม่ได้นำมาคำนวณ
 
 ### 3. หน้าแก้ไขข้อมูล
-1. เลือก **ขนาด** แล้วแก้จำนวนของแต่ละความยาว กด **×** เพื่อลบแถว หรือกด **+ เพิ่มความยาว**
-2. แก้น้ำหนักน็อตตัวเมีย / แหวนอีแปะ / แหวนสปริง (จินต่อตัว) ถ้าไม่ทราบค่าให้เว้นว่างไว้
-3. เพิ่มขนาดใหม่ (เช่น `M27`) หรือลบขนาดที่ไม่ใช้
-4. **จำนวนจินที่ใช้เทียบ** คือจำนวนจินที่ตัวเลขจำนวนน็อตตัวผู้อ้างอิงถึง (100 = จำนวนตัวต่อ 100 จิน)
-5. กด **บันทึก** ระบบจะตรวจค่าให้: ความยาวต้องเป็นตัวเลขมากกว่า 0 และห้ามซ้ำ จำนวนต้องมากกว่า 0 หรือเว้นว่าง ถ้าไม่ต้องการเก็บสิ่งที่แก้ กด **ยกเลิกการแก้ไข**
+1. เลือก **หมวดที่จะแก้ไข**: น็อตตัวผู้ / ตัวเมีย, แหวนอีแปะ, แหวนสปริง หรือแหวนสี่เหลี่ยม
+2. **น็อตตัวผู้ / ตัวเมีย:** เลือกขนาด แล้ว:
+   - แก้จำนวนของแต่ละความยาว
+   - กด **×** เพื่อลบแถว หรือกด **+ เพิ่มความยาว**
+   - แก้น้ำหนักน็อตตัวเมีย (จินต่อตัว)
+   - เพิ่มขนาดใหม่ (เช่น `M27`) หรือลบขนาดที่ไม่ใช้
+3. **แหวน:** แก้ เพิ่ม (**+ เพิ่มแถว**) หรือลบแถว
+   - สเปกแหวนอีแปะและแหวนสี่เหลี่ยมเขียนแบบ `ใน*นอก*หนา` เช่น `8*22*1.5` พิมพ์เป็น `8x22x1.5` ก็ได้
+   - แหวนสปริงใส่ขนาด เช่น `M8`
+4. **จำนวนจินที่ใช้เทียบ** คือจำนวนจินที่ทุกตารางอ้างอิงถึง (100 = จำนวนตัวต่อ 100 จิน)
+5. กด **บันทึก** ระบบจะตรวจค่าให้:
+   - ความยาวและสเปกต้องถูกต้องและห้ามซ้ำ
+   - จำนวนต้องมากกว่า 0 หรือเว้นว่าง
+
+   ถ้าไม่ต้องการเก็บสิ่งที่แก้ กด **ยกเลิกการแก้ไข**
 
 ข้อมูลที่บันทึกจะเก็บ **ในเบราว์เซอร์เครื่องนั้นเท่านั้น** และจะมีแถบสีเหลืองด้านบนเตือนว่ากำลังใช้ข้อมูลที่แก้ในเครื่อง
 
@@ -357,9 +410,10 @@ npx http-server -p 8137 -c-1
 ## หลักการคำนวณ
 
 ```
-น็อตตัวผู้:          น้ำหนักต่อตัว (จิน) = boltBaseJin ÷ จำนวนในตาราง
-                     เช่น M8×25 → 100 ÷ 3670 = 0.02725 จิน
-น็อตตัวเมีย / แหวน:   น้ำหนักต่อตัว (จิน) = ค่าในตาราง
+น็อตตัวผู้, แหวน:   น้ำหนักต่อตัว (จิน) = baseJin ÷ จำนวนในตาราง
+                    เช่น น็อตตัวผู้ M8×25      → 100 ÷ 3670  = 0.027248 จิน
+                         แหวนอีแปะ 8×22×1.5   → 100 ÷ 14000 = 0.007143 จิน
+น็อตตัวเมีย:         น้ำหนักต่อตัว (จิน) = ค่าในตาราง
 
 ตัว → จิน:   จิน = จำนวน × น้ำหนักต่อตัว
 จิน → ตัว:   จำนวน = จิน ÷ น้ำหนักต่อตัว
@@ -378,17 +432,18 @@ npx http-server -p 8137 -c-1
 
 ```js
 window.DEFAULT_DATA = {
-  "version": "2026-10-04",          // เปลี่ยนทุกครั้งที่แก้ข้อมูล
-  "boltBaseJin": 100,               // จำนวนน็อตตัวผู้ = จำนวนตัวต่อ 100 จิน
+  "version": "2026-10-06",          // เปลี่ยนทุกครั้งที่แก้ข้อมูล
+  "baseJin": 100,                   // ทุกตาราง = จำนวนตัวต่อ 100 จิน
   "sizes": [
     {
       "size": "M8",
       "nutJin": 0.038,              // น็อตตัวเมีย จินต่อตัว
-      "flatWasherJin": 0.02,        // แหวนอีแปะ จินต่อตัว
-      "springWasherJin": 0.02,      // แหวนสปริง จินต่อตัว
       "bolts": [[10,5450],[12,5050],[25,3670], ...]   // [ความยาว มม., จำนวนตัวต่อ 100 จิน]; null = ช่องว่าง
     }
   ],
+  "flatWashers":   [["8*22*1.5",14000], ...],   // แหวนอีแปะ [ใน*นอก*หนา, จำนวนตัวต่อ 100 จิน]
+  "springWashers": [["M8",31000], ...],         // แหวนสปริง [ขนาด, จำนวนตัวต่อ 100 จิน]
+  "squareWashers": [["12*30*3",2500], ...],     // แหวนสี่เหลี่ยม [ใน*ด้าน*หนา, จำนวนตัวต่อ 100 จิน]
   "nutPacks": [ { "size": "M8", "jin": 100, "pcs": 10000 } ]   // ใช้อ้างอิงเท่านั้น
 };
 ```
@@ -404,10 +459,12 @@ window.DEFAULT_DATA = {
 | `index.html` | โครงหน้าเว็บ (3 หน้า: คำนวณ, ตารางข้อมูล, แก้ไขข้อมูล) |
 | `styles.css` | หน้าตา, โหมดมืด, เลย์เอาต์มือถือ |
 | `app.js` | การคำนวณ, การปัด, ข้อความสองภาษา (`I18N`), ตาราง, หน้าแก้ไข, นำเข้า/ส่งออก |
-| `data.js` | **ข้อมูลจากตาราง GB30** |
+| `data.js` | **ข้อมูลจากตารางกระดาษ** (น็อตตัวผู้, น็อตตัวเมีย, แหวนอีแปะ / สปริง / สี่เหลี่ยม) |
 | `README.md` | ไฟล์นี้ |
 
-**คีย์ที่เก็บในเบราว์เซอร์:** `gb30.data` (ข้อมูลที่แก้ในเครื่อง), `gb30.backup`, `gb30.lang`, `gb30.prefs2`, `gb30.history`
+**คีย์ที่เก็บในเบราว์เซอร์:** `gb30.data` (ข้อมูลที่แก้ในเครื่อง), `gb30.backup`, `gb30.lang`, `gb30.prefs3`, `gb30.history`
+
+**ไฟล์ข้อมูลรูปแบบเก่า** (ก่อนมีตารางแหวน ที่ใช้ `boltBaseJin` และน้ำหนักแหวนต่อขนาด) ยังนำเข้าได้ ระบบจะแปลงให้อัตโนมัติ โดยรายการแหวนจะเริ่มเป็นค่าว่าง
 
 **เพิ่มภาษาใหม่:** เพิ่มชุดข้อความในออบเจกต์ `I18N` ใน `app.js` และเพิ่มปุ่มในกลุ่ม `.lang` ใน `index.html`
 
@@ -415,6 +472,7 @@ window.DEFAULT_DATA = {
 
 ## ข้อควรทราบ
 - **น้ำหนักน็อตตัวเมียในตาราง ไม่ตรงกับบันทึกลายมือ:** ตารางระบุ M8 = 0.038 จิน (≈19 กรัม) แต่บันทึกลายมือ (100 จิน / 10,000 ตัว) เท่ากับ 0.01 จิน (≈5 กรัม) เว็บใช้ค่าจากตาราง ควรลองชั่งจริงเพื่อตรวจสอบ ถ้าไม่ตรงให้แก้ในหน้าแก้ไขข้อมูล
-- **แหวนอีแปะกับแหวนสปริง** ตอนนี้ใช้ค่า 平弹垫 ค่าเดียวกันตามตารางกระดาษ จนกว่าจะใส่ค่าแยก
-- ช่องที่ว่างในตารางต้นฉบับ: M10×170, M10×190, M12×170, M12×180
+- **แหวนอีแปะ 30×56×3 = 700 ตัว** น่าจะพิมพ์ผิด ถ้าคิดจากปริมาตรเหล็กควรได้ประมาณ 1,250 ตัวต่อ 100 จิน ใกล้กับ 33×57×3 = 1,300 ตัว ตอนนี้ใช้ค่าตามที่พิมพ์ไว้ ควรลองชั่งจริงเพื่อตรวจสอบ
+- **แหวนสี่เหลี่ยม (方垫)** มาจากบันทึกลายมือ ถือว่าเป็นจำนวนตัวต่อ 100 จิน เหมือนตารางแหวนอื่น
+- ช่องที่ว่างในตารางน็อตตัวผู้ต้นฉบับ: M10×170, M10×190, M12×170, M12×180
 - ข้อมูลที่แก้และประวัติการคำนวณเก็บในเบราว์เซอร์ ถ้าล้างข้อมูลเว็บไซต์ ข้อมูลนี้จะหาย ควรกด **ส่งออก data.js** เก็บไว้เป็นสำรอง
